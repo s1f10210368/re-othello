@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "run-p dev:*",
+    "dev": "next dev",
     "dev:next": "next dev -p 3000",
     "dev:hcm": "hcm 'src/**/*.module.css' -w",
     "hcm": "hcm 'src/**/*.module.css'",

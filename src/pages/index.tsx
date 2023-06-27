@@ -17,8 +17,12 @@ const Home = () => {
   const onClick = (x: number, y: number) => {
     console.log(x, y);
     const newBoard: number[][] = JSON.parse(JSON.stringify(board));
-    newBoard[y][x] = turnColor;
-    setTurnColor(3 - turnColor);
+    //下のコマが枠外でない、かつ相手の色である場合
+    if (board[y + 1] !== undefined && board[y + 1][x] === 3 - turnColor) {
+      newBoard[y][x] = turnColor;
+      // 1であれば2に、2であれば1に
+      setTurnColor(3 - turnColor);
+    }
     setBoard(newBoard);
   };
 

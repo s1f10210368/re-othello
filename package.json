@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "dev:next": "next dev -p 3000",
-    "dev:hcm": "hcm 'src/**/*.module.css' -w",
+    "dev": "npm-run-all --parallel dev:next dev:hcm",
+    "dev:next": "./node_modules/.bin/next dev -p 3000",
+    "dev:hcm": "./node_modules/.bin/hcm 'src/**/*.module.css' -w",
     "hcm": "hcm 'src/**/*.module.css'",
     "build": "next build && next export",
     "lint": "run-p lint:js lint:prettier lint:style",

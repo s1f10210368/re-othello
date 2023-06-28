@@ -17,8 +17,22 @@ const Home = () => {
   const onClick = (x: number, y: number) => {
     console.log(x, y);
     const newBoard: number[][] = JSON.parse(JSON.stringify(board));
-    //下のコマが枠外でない、かつ相手の色である場合
-    if (board[y + 1] !== undefined && board[y + 1][x] === 3 - turnColor) {
+    const direction = [
+      [-1, 0], //左
+      [1, 0], //右
+      [0, -1], //上
+      [0, 1], //下
+      [-1, -1], //左上
+      [1, -1], //右上
+      [-1, 1], //左下
+      [1, 1], //右下
+    ];
+    direction.map(([dx, dy]) => {
+      if (board[y + dy] !== undefined && board[y + dy][x + dx] === 3 - turnColor) {
+        newBoard[y + dy][x + dx] = turnColor;
+      }
+    });
+    {
       newBoard[y][x] = turnColor;
       // 1であれば2に、2であれば1に
       setTurnColor(3 - turnColor);
@@ -35,6 +49,7 @@ const Home = () => {
               {color !== 0 && (
                 <div
                   className={styles.stone}
+                  // colorが1であれば#000をそうでなければ#fffを返す
                   style={{ background: color === 1 ? '#000' : '#fff' }}
                 />
               )}

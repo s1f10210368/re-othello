@@ -15,9 +15,19 @@ const Home = () => {
   ]);
 
   const onClick = (x: number, y: number) => {
+    //クリックされたx軸とy軸をコンソール上で表示
     console.log(x, y);
+
+    if (board[y][x] !== 0) {
+      //すでに駒が配置されている箇所は操作を行わない
+      return;
+    }
+
+    //ボードの深いコピーを作成
     const newBoard: number[][] = JSON.parse(JSON.stringify(board));
-    const direction = [
+
+    //周りの8方向を表す
+    const directions = [
       [-1, 0], //左
       [1, 0], //右
       [0, -1], //上
@@ -27,17 +37,43 @@ const Home = () => {
       [-1, 1], //左下
       [1, 1], //右下
     ];
-    direction.map(([dx, dy]) => {
-      if (board[y + dy] !== undefined && board[y + dy][x + dx] === 3 - turnColor) {
-        newBoard[y + dy][x + dx] = turnColor;
+
+    //8方向それぞれについてループを行う
+    for (const [dx, dy] of directions) {
+      let nx = x + dx;
+      let ny = y + dy;
+
+      //選択した位置の周囲のセルがボード上のものであり、かつ相手の駒である場合
+      if (newBoard[ny] !== undefined && newBoard[ny][nx] === 3 - turnColor) {
+        nx += dx;
+        ny += dy;
+
+        //相手の駒が連続している間は、探索位置を進める
+        while (newBoard[ny] !== undefined && newBoard[ny][nx] === 3 - turnColor) {
+          nx += dx;
+          ny += dy;
+        }
+
+        //探索位置が自分の駒であった場合
+        if (newBoard[ny] !== undefined && newBoard[ny][nx] === turnColor) {
+          //自身の駒に到達するまで、間の駒をすべて自分のものにする
+          while (board[(ny -= dy)][(nx -= dx)] === 3 - turnColor) {
+            newBoard[ny][nx] = turnColor;
+          }
+
+          //最初にクリックした位置に自分の駒を置く
+          newBoard[y][x] = turnColor;
+
+          //手番を相手に渡す
+          setTurnColor(3 - turnColor);
+
+          //ボードの状態を更新する
+          setBoard(newBoard);
+
+          return;
+        }
       }
-    });
-    {
-      newBoard[y][x] = turnColor;
-      // 1であれば2に、2であれば1に
-      setTurnColor(3 - turnColor);
     }
-    setBoard(newBoard);
   };
 
   return (

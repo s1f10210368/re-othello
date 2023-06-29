@@ -35,38 +35,20 @@ const Home = () => {
     ];
 
     //各方向に対する処理
-    for (const [dx, dy] of directions) {
-      // dx, dyの方向に1つ移動した場所を新たに設定
-      let nx = x + dx;
-      let ny = y + dy;
-      // それがボードの範囲内かつ相手の色のコマがあった場合
-      if (newBoard[ny] !== undefined && newBoard[ny][nx] === 3 - turnColor) {
-        nx += dx;
-        ny += dy;
-        // (nx, ny)がボードの範囲内かつ相手の色のコマが続いている限りループする
-        while (newBoard[ny] !== undefined && newBoard[ny][nx] === 3 - turnColor) {
-          nx += dx;
-          ny += dy;
-        }
-        // (nx, ny)がボードの範囲内かつ自分のコマであるなら、間にあるコマを裏返す
-        if (newBoard[ny] !== undefined && newBoard[ny][nx] === turnColor) {
-          // 反転するコマは(nx, ny)から(dx, dy)の逆方向へ1つずつ戻って(x, y)に到達するまでのコマ
-          let backX = nx - dx;
-          let backY = ny - dy;
-          while (backX !== x || backY !== y) {
-            newBoard[backY][backX] = turnColor; //コマを裏返す
-            backX -= dx; // 反対方向へ1つ戻る
-            backY -= dy; // 反対方向へ1つ戻る
-          }
-          newBoard[y][x] = turnColor;
-        }
-      }
+    if (board[y + 1] !== undefined && board[y + 1][x] === 3 - turnColor) {
+      //上方向
+      newBoard[y][x] = turnColor;
+    } else if (board[y - 1] !== undefined && board[y - 1][x] === 3 - turnColor) {
+      //下方向
+      newBoard[y][x] = turnColor;
+    } else if (board[x] !== undefined && board[y][x - 1] === 3 - turnColor) {
+      //右方向
+      newBoard[y][x] = turnColor;
+    } else if (board[x] !== undefined && board[y][x + 1] === 3 - turnColor) {
+      //左方向
+      newBoard[y][x] = turnColor;
     }
-
-    //手番を相手にする
     setTurnColor(3 - turnColor);
-
-    //ボードを更新する
     setBoard(newBoard);
   };
 

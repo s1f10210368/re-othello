@@ -35,19 +35,27 @@ const Home = () => {
     ];
 
     //各方向に対する処理
-    if (board[y + 1] !== undefined && board[y + 1][x] === 3 - turnColor) {
-      //上方向
-      newBoard[y][x] = turnColor;
-    } else if (board[y - 1] !== undefined && board[y - 1][x] === 3 - turnColor) {
-      //下方向
-      newBoard[y][x] = turnColor;
-    } else if (board[x] !== undefined && board[y][x - 1] === 3 - turnColor) {
-      //右方向
-      newBoard[y][x] = turnColor;
-    } else if (board[x] !== undefined && board[y][x + 1] === 3 - turnColor) {
-      //左方向
-      newBoard[y][x] = turnColor;
-    }
+    directions.forEach(([dx, dy]) => {
+      if (
+        board[y + dy] !== undefined &&
+        board[y + dy][x + dx] !== undefined &&
+        board[y + dy][x + dx] === 3 - turnColor
+      ) {
+        for (let i = 2; ; i++) {
+          if (board[y + dy * i] === undefined || board[y + dy * i][x + dx * i] !== 3 - turnColor) {
+            if (board[y + dy * i] !== undefined && board[y + dy * i][x + dx * i] === turnColor) {
+              // 自分のコマが存在するまでの間のコマを全て自分の色に変える
+              for (let j = 1; j < i; j++) {
+                newBoard[y + dy * j][x + dx * j] = turnColor;
+              }
+            }
+            break;
+          }
+        }
+      }
+    });
+
+    newBoard[y][x] = turnColor;
     setTurnColor(3 - turnColor);
     setBoard(newBoard);
   };

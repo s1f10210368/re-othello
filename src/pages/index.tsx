@@ -15,18 +15,14 @@ const Home = () => {
   ]);
 
   const onClick = (x: number, y: number) => {
-    //クリックされたx軸とy軸をコンソール上で表示
     console.log(x, y);
 
+    //すでに駒がある場所は何もしない
     if (board[y][x] !== 0) {
-      //すでに駒が配置されている箇所は操作を行わない
       return;
     }
 
-    //ボードの深いコピーを作成
     const newBoard: number[][] = JSON.parse(JSON.stringify(board));
-
-    //周りの8方向を表す
     const directions = [
       [-1, 0], //左
       [1, 0], //右
@@ -38,42 +34,40 @@ const Home = () => {
       [1, 1], //右下
     ];
 
-    //8方向それぞれについてループを行う
+    //各方向に対する処理
     for (const [dx, dy] of directions) {
+      // dx, dyの方向に1つ移動した場所を新たに設定
       let nx = x + dx;
       let ny = y + dy;
-
-      //選択した位置の周囲のセルがボード上のものであり、かつ相手の駒である場合
+      // それがボードの範囲内かつ相手の色のコマがあった場合
       if (newBoard[ny] !== undefined && newBoard[ny][nx] === 3 - turnColor) {
         nx += dx;
         ny += dy;
-
-        //相手の駒が連続している間は、探索位置を進める
+        // (nx, ny)がボードの範囲内かつ相手の色のコマが続いている限りループする
         while (newBoard[ny] !== undefined && newBoard[ny][nx] === 3 - turnColor) {
           nx += dx;
           ny += dy;
         }
-
-        //探索位置が自分の駒であった場合
+        // (nx, ny)がボードの範囲内かつ自分のコマであるなら、間にあるコマを裏返す
         if (newBoard[ny] !== undefined && newBoard[ny][nx] === turnColor) {
-          //自身の駒に到達するまで、間の駒をすべて自分のものにする
-          while (board[(ny -= dy)][(nx -= dx)] === 3 - turnColor) {
-            newBoard[ny][nx] = turnColor;
+          // 反転するコマは(nx, ny)から(dx, dy)の逆方向へ1つずつ戻って(x, y)に到達するまでのコマ
+          let backX = nx - dx;
+          let backY = ny - dy;
+          while (backX !== x || backY !== y) {
+            newBoard[backY][backX] = turnColor; //コマを裏返す
+            backX -= dx; // 反対方向へ1つ戻る
+            backY -= dy; // 反対方向へ1つ戻る
           }
-
-          //最初にクリックした位置に自分の駒を置く
           newBoard[y][x] = turnColor;
-
-          //手番を相手に渡す
-          setTurnColor(3 - turnColor);
-
-          //ボードの状態を更新する
-          setBoard(newBoard);
-
-          return;
         }
       }
     }
+
+    //手番を相手にする
+    setTurnColor(3 - turnColor);
+
+    //ボードを更新する
+    setBoard(newBoard);
   };
 
   return (

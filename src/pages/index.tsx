@@ -33,8 +33,8 @@ const Home = () => {
       [-1, 1], //左下
       [1, 1], //右下
     ];
-
-    //各方向に対する処理
+    let flippable = false;
+    // 各方向に対する処理
     directions.forEach(([dx, dy]) => {
       if (
         board[y + dy] !== undefined &&
@@ -45,6 +45,7 @@ const Home = () => {
           if (board[y + dy * i] === undefined || board[y + dy * i][x + dx * i] !== 3 - turnColor) {
             if (board[y + dy * i] !== undefined && board[y + dy * i][x + dx * i] === turnColor) {
               // 自分のコマが存在するまでの間のコマを全て自分の色に変える
+              flippable = true;
               for (let j = 1; j < i; j++) {
                 newBoard[y + dy * j][x + dx * j] = turnColor;
               }
@@ -54,7 +55,10 @@ const Home = () => {
         }
       }
     });
-
+    // 挟み込める駒がなかった場合はコマを置かない
+    if (!flippable) {
+      return;
+    }
     newBoard[y][x] = turnColor;
     setTurnColor(3 - turnColor);
     setBoard(newBoard);

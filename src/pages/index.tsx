@@ -41,15 +41,26 @@ const Home = () => {
         board[y + dy][x + dx] !== undefined &&
         board[y + dy][x + dx] === 3 - turnColor
       ) {
+        // iは探索するタイルの数
         for (let i = 2; ; i++) {
+          // 2つの条件で探索を停止:
+          // 1.指定した座標にタイルが存在しない
+          // 2.タイルが自分の色とは逆色の場合
+
           if (board[y + dy * i] === undefined || board[y + dy * i][x + dx * i] !== 3 - turnColor) {
+            // さらに2つの条件がが満たされた時、
+            // 1.指定した座標にタイルが存在する
+            // 2.タイルが自分の色と同じ色
             if (board[y + dy * i] !== undefined && board[y + dy * i][x + dx * i] === turnColor) {
-              // 自分のコマが存在するまでの間のコマを全て自分の色に変える
+              // この場合、"flippable" (返ることが可能)になる
               flippable = true;
+
+              // 初めて見つけた自分の色のタイルと、以前のタイルの間に存在するすべてのタイルを自分の色に変更
               for (let j = 1; j < i; j++) {
                 newBoard[y + dy * j][x + dx * j] = turnColor;
               }
             }
+            // 自分の色のタイルが見つかったか、探索が尽くされた場合にループを終了
             break;
           }
         }

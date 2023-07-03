@@ -17,7 +17,7 @@ const Home = () => {
   const onClick = (x: number, y: number) => {
     console.log(x, y);
 
-    //すでに駒がある場所は何もしない
+    //すでに駒がある場所は何もしないようにする
     if (board[y][x] !== 0) {
       return;
     }

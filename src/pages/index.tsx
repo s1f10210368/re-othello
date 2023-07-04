@@ -67,9 +67,9 @@ const Home = () => {
       }
     }
     setCanPlaceList(newCanPlaceList);
-  }, [turnColor]);
+  });
 
-  const onClick = (x, y) => {
+  const onClick = (x: number, y: number) => {
     console.log(x, y);
     if (board[y][x] !== 0) {
       return;

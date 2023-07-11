@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Cell } from '../components/Cell';
 import styles from './index.module.css';
 
 const Home = () => {
@@ -14,6 +15,7 @@ const Home = () => {
     [0, 0, 0, 0, 0, 0, 0, 0],
   ]);
   const [canPlaceList, setCanPlaceList] = useState([...Array(8)].map(() => Array(8).fill(false)));
+  const [gameover, setGameover] = useState(false);
 
   const directions = [
     [-1, 0], //左
@@ -26,7 +28,7 @@ const Home = () => {
     [1, 1], //右下
   ];
 
-  const checkCanPlace = (x, y) => {
+  const checkCanPlace = (x: number, y: number) => {
     if (board[y][x] !== 0) {
       return false;
     }
@@ -59,15 +61,25 @@ const Home = () => {
 
   useEffect(() => {
     const newCanPlaceList = [...Array(8)].map(() => Array(8).fill(false));
+    let isPass = true;
     for (let y = 0; y < 8; y++) {
       for (let x = 0; x < 8; x++) {
         if (checkCanPlace(x, y)) {
           newCanPlaceList[y][x] = true;
+          isPass = false;
         }
       }
     }
     setCanPlaceList(newCanPlaceList);
-  });
+    if (isPass) {
+      if (turnColor === 2) {
+        //前回のターン(白)でもパスだった場合
+        setGameover(true); // ゲーム終了にする
+      } else {
+        setTurnColor(3 - turnColor);
+      }
+    }
+  }); //ターンが切り替わるたびに再計算する
 
   const onClick = (x: number, y: number) => {
     console.log(x, y);
@@ -108,18 +120,12 @@ const Home = () => {
       <div className={styles.board}>
         {board.map((row, y) =>
           row.map((color, x) => (
-            <div
-              className={`${styles.cell} ${canPlaceList[y][x] ? styles.canPlace : ''}`}
+            <Cell
+              color={color}
               key={`${x}-${y}`}
+              canPlaceList={canPlaceList}
               onClick={() => onClick(x, y)}
-            >
-              {color !== 0 && (
-                <div
-                  className={styles.stone}
-                  style={{ background: color === 1 ? '#000' : '#fff' }}
-                />
-              )}
-            </div>
+            /> //親から子供にデータを渡す
           ))
         )}
       </div>

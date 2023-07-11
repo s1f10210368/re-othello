@@ -1,0 +1,17 @@
+.cell {
+  width: calc(640px / 8);
+  height: calc(640px / 8);
+  border: 1px solid black;
+}
+
+.stone {
+  width: 60px;
+  height: 60px;
+  background-color: white;
+  border-radius: 50%;
+  margin: 10px;
+}
+
+.canPlace {
+  background: #ddd;
+}

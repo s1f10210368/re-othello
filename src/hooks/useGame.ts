@@ -69,10 +69,12 @@ export const useGame = () => {
         if (checkCanPlace(x, y)) {
           newCanPlaceList[y][x] = true;
           isPass = false;
+          console.log(x, y);
         }
       }
     }
     setCanPlaceList(newCanPlaceList);
+    console.log('-');
     if (isPass) {
       if (turnColor === 2) {
         //前回のターン(白)でもパスだった場合

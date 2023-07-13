@@ -2,7 +2,7 @@
 
 import styles from './cell.module.css';
 
-export const Cell = (props: { color: number; canPlaceList: number[][]; onClick: () => void }) => {
+export const Cell = (props: { color: number; canPlaceList: boolean; onClick: () => void }) => {
   return (
     <div
       className={`${styles.cell} ${props.canPlaceList ? styles.canplace : ''}`}

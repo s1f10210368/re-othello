@@ -17,7 +17,7 @@ const Home = () => {
               <Cell
                 color={color}
                 key={`${x}-${y}`}
-                canPlaceList={canPlaceList}
+                canPlaceList={canPlaceList[y][x]}
                 onClick={() => onClick(x, y)}
               /> //親から子供にデータを渡す
             )

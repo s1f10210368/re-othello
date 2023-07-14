@@ -26,6 +26,17 @@ export const useGame = () => {
   const [canPlaceList, setCanPlaceList] = useState([...Array(8)].map(() => Array(8).fill(false)));
   const [gameover, setGameover] = useState(false);
 
+  const checkplace = useCallback(
+    (x: number, y: number) => {
+      const tempBoard = JSON.parse(JSON.stringify(board));
+      if (tempBoard[y] !== undefined && tempBoard[y][x] !== undefined) {
+        return true;
+      }
+      return false;
+    },
+    [board]
+  );
+
   const checkCanPlace = useCallback(
     //useCallbackでuseEffectを修正
     (x: number, y: number) => {
@@ -35,18 +46,14 @@ export const useGame = () => {
       const tempBoard = JSON.parse(JSON.stringify(board));
       let flippable = false;
       directions.forEach(([dx, dy]) => {
-        if (
-          tempBoard[y + dy] !== undefined &&
-          tempBoard[y + dy][x + dx] !== undefined &&
-          tempBoard[y + dy][x + dx] === 3 - turnColor
-        ) {
-          for (let i = 2; ; i++) {
+        if (checkplace(x + dx, y + dy) && tempBoard[y + dy][x + dx] === 3 - turnColor) {
+          for (let i = 2; i < 8; i++) {
             if (
-              tempBoard[y + dy * i] === undefined ||
-              tempBoard[y + dy * i][x + dx * i] !== 3 - turnColor
+              board[y + dy * i] === undefined ||
+              board[y + dy * i][x + dx * i] !== 3 - turnColor
             ) {
               if (
-                tempBoard[y + dy * i] !== undefined &&
+                checkplace(x + dx * i, y + dy * i) &&
                 tempBoard[y + dy * i][x + dx * i] === turnColor
               ) {
                 flippable = true;
@@ -58,31 +65,20 @@ export const useGame = () => {
       });
       return flippable;
     },
-    [board, turnColor]
+    [board, turnColor, checkplace]
   );
 
   useEffect(() => {
     const newCanPlaceList = [...Array(8)].map(() => Array(8).fill(false));
-    let isPass = true;
     for (let y = 0; y < 8; y++) {
       for (let x = 0; x < 8; x++) {
         if (checkCanPlace(x, y)) {
           newCanPlaceList[y][x] = true;
-          isPass = false;
           console.log(x, y);
         }
       }
     }
     setCanPlaceList(newCanPlaceList);
-    console.log('-');
-    if (isPass) {
-      if (turnColor === 2) {
-        //前回のターン(白)でもパスだった場合
-        setGameover(true); // ゲーム終了にする
-      } else {
-        setTurnColor(3 - turnColor);
-      }
-    }
   }, [checkCanPlace, turnColor]); //ターンが切り替わるたびに再計算する
 
   const onClick = (x: number, y: number) => {

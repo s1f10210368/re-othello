@@ -37,6 +37,31 @@ export const useGame = () => {
     [board]
   );
 
+  const Flg = useCallback(
+    (x: number, y: number, num: number, board: Array<number>, undefindeFlg: boolean) => {
+      let isCheckplace = false;
+
+      if (undefindeFlg === true) {
+        isCheckplace = checkplace(x, y);
+        return isCheckplace && board[x] === num;
+      }
+      isCheckplace = board === undefined;
+      return isCheckplace || board[x] !== num;
+    },
+    [checkplace]
+  );
+
+  const secondFlg = useCallback(
+    (x: number, y: number, dx: number, dy: number, tempBoard: Array<Array<number>>, i: number) => {
+      for (let j = 1; j < i; j++) {
+        tempBoard[y + dy * j][x + dx * j] = turnColor;
+      }
+
+      return tempBoard;
+    },
+    [turnColor]
+  );
+
   const checkCanPlace = useCallback(
     //useCallbackでuseEffectを修正
     (x: number, y: number) => {
@@ -46,16 +71,10 @@ export const useGame = () => {
       const tempBoard = JSON.parse(JSON.stringify(board));
       let flippable = false;
       directions.forEach(([dx, dy]) => {
-        if (checkplace(x + dx, y + dy) && tempBoard[y + dy][x + dx] === 3 - turnColor) {
+        if (Flg(x + dx, y + dy, 3 - turnColor, board[y + dy], true)) {
           for (let i = 2; i < 8; i++) {
-            if (
-              board[y + dy * i] === undefined ||
-              board[y + dy * i][x + dx * i] !== 3 - turnColor
-            ) {
-              if (
-                checkplace(x + dx * i, y + dy * i) &&
-                tempBoard[y + dy * i][x + dx * i] === turnColor
-              ) {
+            if (Flg(x + dx * i, y + dy * i, 3 - turnColor, board[y + dy * i], false)) {
+              if (Flg(x + dx * i, y + dy * i, turnColor, tempBoard[y + dy * i], true)) {
                 flippable = true;
               }
               break;
@@ -65,7 +84,7 @@ export const useGame = () => {
       });
       return flippable;
     },
-    [board, turnColor, checkplace]
+    [board, turnColor, Flg]
   );
 
   useEffect(() => {
@@ -86,21 +105,18 @@ export const useGame = () => {
     if (board[y][x] !== 0) {
       return;
     }
-    const newBoard = JSON.parse(JSON.stringify(board));
+    let newBoard = JSON.parse(JSON.stringify(board));
     let flippable = false;
     directions.forEach(([dx, dy]) => {
-      if (
-        board[y + dy] !== undefined &&
-        board[y + dy][x + dx] !== undefined &&
-        board[y + dy][x + dx] === 3 - turnColor
-      ) {
+      if (Flg(x + dx, y + dy, 3 - turnColor, board[y + dy], true)) {
         for (let i = 2; ; i++) {
-          if (board[y + dy * i] === undefined || board[y + dy * i][x + dx * i] !== 3 - turnColor) {
-            if (board[y + dy * i] !== undefined && board[y + dy * i][x + dx * i] === turnColor) {
+          if (Flg(x + dx * i, y + dy * i, 3 - turnColor, board[y + dy * i], false)) {
+            if (Flg(x + dx * i, y + dy * i, turnColor, board[y + dy * i], true)) {
               flippable = true;
-              for (let j = 1; j < i; j++) {
-                newBoard[y + dy * j][x + dx * j] = turnColor;
-              }
+              newBoard = secondFlg(x, y, dx, dy, newBoard, i);
+              // for (let j = 1; j < i; j++) {
+              //   newBoard[y + dy * j][x + dx * j] = turnColor;
+              // }
             }
             break;
           }
